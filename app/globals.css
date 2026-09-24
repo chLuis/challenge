@@ -1,26 +1,72 @@
 @import "tailwindcss";
 
+/* Color only carries meaning: good / regular / bad ratings, and "draft" for
+   text a model wrote that is not saved yet. Everything else stays neutral.
+
+   Each token is written once as light-dark(light, dark). color-scheme picks
+   the side: the system preference by default, or the one forced by
+   html[data-theme], which an inline script sets before the first paint. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: light dark;
+
+  --bg: light-dark(#f6f6f4, #141413);
+  --surface: light-dark(#ffffff, #1d1d1b);
+  --text: light-dark(#1d1d1b, #ededea);
+  --muted: light-dark(#6b6b66, #a3a39c);
+  --border: light-dark(#e3e3de, #33332f);
+  --primary: light-dark(#1d1d1b, #ededea);
+  --primary-text: light-dark(#ffffff, #141413);
+  --good: light-dark(#16a34a, #4ade80);
+  --regular: light-dark(#eab308, #facc15);
+  --bad: light-dark(#dc2626, #f87171);
+  --draft: light-dark(#4a55a2, #a9b1f0);
+  --draft-soft: light-dark(#eef0fb, #23264a);
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-text: var(--primary-text);
+  --color-good: var(--good);
+  --color-regular: var(--regular);
+  --color-bad: var(--bad);
+  --color-draft: var(--draft);
+  --color-draft-soft: var(--draft-soft);
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* Added only while the person switches themes (see lib/theme.ts). */
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
+  transition-duration: 300ms !important;
+  transition-timing-function: ease !important;
+}
+
+/* The theme toggle highlights its option from the same attribute the inline
+   script sets, so it is correct before React loads. */
+:root:not([data-theme]) [data-theme-option="system"],
+:root[data-theme="light"] [data-theme-option="light"],
+:root[data-theme="dark"] [data-theme-option="dark"] {
+  background: var(--primary);
+  color: var(--primary-text);
 }
