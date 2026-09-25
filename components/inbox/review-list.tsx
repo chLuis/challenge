@@ -28,7 +28,7 @@ export function ReviewList({ filters, locations, reviews, aiConfigured, onFilter
           <button
             type="button"
             onClick={() => onFiltersChange({ ...filters, location: null })}
-            className="shrink-0 text-sm text-muted underline underline-offset-2 hover:text-text"
+            className="cursor-pointer shrink-0 text-sm text-muted underline underline-offset-2 hover:text-text"
           >
             Ver todas las sedes
           </button>

@@ -39,7 +39,7 @@ export function FilterBar({ filters, counts, onChange }: FilterBarProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => update({ status })}
-              className={`flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1.5 text-xs transition-colors md:flex-none md:gap-1.5 md:px-3 sm:text-sm ${
+              className={`cursor-pointer flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1.5 text-xs transition-colors md:flex-none md:gap-1.5 md:px-3 sm:text-sm ${
                 selected ? "bg-primary text-primary-text" : "text-muted hover:text-text"
               }`}
             >

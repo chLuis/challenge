@@ -15,8 +15,8 @@ export function SummaryCard({ item, selected, onSelect }: SummaryCardProps) {
       type="button"
       aria-pressed={selected}
       onClick={onSelect}
-      className={`h-24 w-full rounded-xl border bg-surface p-3 text-left shadow-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 lg:h-auto lg:p-4 ${
-        selected ? "border-primary ring-1 ring-primary" : "border-border hover:border-muted"
+      className={`cursor-pointer h-24 w-full rounded-xl border bg-surface p-3 text-left shadow-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary sm:px-4 lg:h-auto lg:p-4 ${
+        selected ? "border-primary ring-2 ring-primary" : "border-border hover:border-muted"
       }`}
     >
       {item.locationId === null ? <CompactOverall item={item} /> : <CompactLocation item={item} />}
