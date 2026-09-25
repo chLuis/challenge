@@ -2,8 +2,8 @@
 
 Una pantalla para el grupo gastronómico (dos restaurantes, tres sedes) que entra cada mañana a ver qué reseñas faltan contestar, pide un borrador a un modelo de lenguaje, lo ajusta y responde. Arriba se ve cuánto queda pendiente, al costado el resumen de cada sede y abajo la lista.
 
-- **App publicada:** _pendiente, se completa después del deploy en Vercel_
-- **Stack:** Next.js 16 (App Router) + TypeScript, Supabase (Postgres), Gemini para los borradores, Tailwind CSS 4, Vitest.
+- **App publicada:** [Link a la web](https://challenge.luischrestia.com.ar/)
+- **Stack:** Next.js 16 (App Router) + TypeScript, Supabase (Postgres), Gemini para los borradores, Tailwind CSS 4, Sonner para los avisos, Vitest.
 
 ![Escritorio, tema claro](docs/screenshots/escritorio-claro.png)
 
@@ -73,9 +73,9 @@ El archivo llega con varios problemas a propósito. Qué hace la app con cada un
 | **rv-205 aparece dos veces** (la segunda es una edición con otra calificación) | Queda la versión con `updated_at` más nuevo, sin importar el orden en el archivo. Rv-205 termina con 3★, no con 1★. El import avisa que la encontró duplicada. | `lib/import/plan.ts` |
 | **rv-108 no tiene calificación** | Se importa con `rating = null` y se muestra "Sin calificación". **No entra en el promedio**, pero sí cuenta en el total de reseñas y en el % respondido, porque existe y hay que contestarla. | `lib/reviews/summary.ts` |
 | **rv-301 apunta a `loc-99`, que no existe** | No se importa, y **la sede nunca se crea sola**. El import informa `rv-301: la sede loc-99 no existe`. Además, la foreign key de la base impediría insertarla. | `lib/import/plan.ts`, `supabase/schema.sql` |
-| **Belgrano no tiene reseñas** | Su promedio y su % respondido son `null`, no 0. La pantalla dice "Sin reseñas todavía" en vez de mostrar un promedio de cero. | `lib/reviews/summary.ts`, `components/location-summaries.tsx` |
+| **Belgrano no tiene reseñas** | Su promedio y su % respondido son `null`, no 0. La pantalla dice "Sin reseñas todavía" en vez de mostrar un promedio de cero. | `lib/reviews/summary.ts`, `components/locations/` |
 | **Reseñas que ya venían respondidas** (rv-103, rv-107, rv-201) | Entran con su respuesta y su `replied_at` original, y cuentan como respondidas igual que las contestadas desde la app. "Respondida" significa `reply_text` no nulo. | `lib/reviews/summary.ts` |
-| **rv-105 tiene el texto vacío** (no estaba en la lista del enunciado) | Se importa igual y la tarjeta dice "Dejó la calificación sin comentario". El prompt le avisa al modelo que no invente detalles de la visita. | `components/review-card.tsx`, `lib/ai/draft-prompt.ts` |
+| **rv-105 tiene el texto vacío** (no estaba en la lista del enunciado) | Se importa igual y la tarjeta dice "Dejó la calificación sin comentario". El prompt le avisa al modelo que no invente detalles de la visita. | `components/reviews/review-card.tsx`, `lib/ai/draft-prompt.ts` |
 
 **Con estos datos,** Palermo da **3,63** sobre 8 reseñas calificadas y Centro **3,67** con 6 reseñas, como indica el enunciado. Hay un test que lo verifica contra el `reviews.json` real.
 
@@ -171,7 +171,7 @@ El update solo escribe si la reseña **todavía no tiene respuesta** (`WHERE rep
   | Falla al guardar | Mensaje bajo el campo, sin perder el texto |
   | Mientras genera el borrador | El botón dice "Generando…" y "Guardar" se deshabilita |
   | Error de la base | Pantalla con "Reintentar" |
-  | Al guardar | Aviso "✓ Guardamos la respuesta a …" |
+  | Al guardar | Un toast: "Guardamos la respuesta a …" |
 
 - **El borrador se nota como borrador:**
   - Aparece un aviso violeta, "✦ Borrador escrito por IA. Todavía no se guardó: revisalo antes de guardar", y el campo toma un borde punteado.
@@ -186,8 +186,8 @@ El update solo escribe si la reseña **todavía no tiene respuesta** (`WHERE rep
   - Las fechas se leen como las diría una persona ("ayer", "hace 4 días", "el 2 de septiembre"), según el calendario de Buenos Aires.
   - Los números usan formato argentino (3,63 · 27%) y cifras tabulares.
 - **Tema claro, oscuro o según el sistema:**
-  - Un script inline en el `<head>` aplica la preferencia guardada antes del primer pintado, así que no hay destello al entrar.
-  - El cambio de tema tiene una transición suave, salvo que el sistema pida reducir el movimiento.
+  - La preferencia se guarda en una cookie y el servidor ya manda el `<html>` con el tema elegido, así que no hay destello al entrar ni script inline.
+  - El selector es un formulario que llama a una server action; no lleva estado en el cliente.
   - Los colores se definen una sola vez con `light-dark()`.
 - **Filtrar no consulta la base.** El servidor manda todas las reseñas una vez y el filtrado ocurre en el navegador con las mismas funciones puras que tienen tests. La URL se actualiza con `history.replaceState`, que Next sincroniza con `useSearchParams` sin ir al servidor.
 
@@ -197,19 +197,29 @@ El update solo escribe si la reseña **todavía no tiene respuesta** (`WHERE rep
 
 ```
 app/
-  page.tsx                       carga los datos una vez (servidor)
+  layout.tsx                     lee la cookie del tema y monta el toaster
+  page.tsx                       pide los datos con getInbox() y elige qué mostrar
   api/reviews/[id]/reply         guarda una respuesta
   api/reviews/[id]/draft         pide un borrador a la IA
-components/                      UI: inbox, filtros, tarjetas, resumen, tema
+components/
+  ui/                            piezas genéricas: botón, estrellas, toaster, iniciales
+  inbox/                         la bandeja: header, lista y estados vacíos
+  reviews/                       tarjeta de reseña, respuesta, formulario, filtros
+  locations/                     resumen por sede (compacto y completo)
+  theme-toggle.tsx               selector de tema (server component + server action)
+types/                           tipos compartidos: db, reviews, import, ai, theme
 lib/
   reviews/summary.ts             resumen por sede (función pura)
   reviews/filters.ts             filtros ↔ URL (función pura)
   reviews/rating-tone.ts         escala bueno / regular / malo
   reviews/repository.ts          lecturas y escrituras en Supabase
+  reviews/get-inbox.ts           datos de la bandeja por request, o qué variables faltan
+  reviews/reply-api.ts           llamadas del navegador a las rutas de la API
   import/plan.ts                 qué crear, actualizar o saltear (función pura)
   import/export-file.ts          validación del JSON
   ai/draft-prompt.ts             prompt según la calificación (función pura)
   ai/gemini.ts                   adaptador del proveedor de IA
+  theme.ts, theme-action.ts      leer y guardar el tema en una cookie
 scripts/import-reviews.ts        comando de importación
 supabase/schema.sql              tablas, checks, índices y RLS
 ```
@@ -241,4 +251,5 @@ Cada parte está separada del resto. La lógica de negocio vive en funciones pur
 - **El free tier de Gemini a veces se satura.** En las pruebas, algunos pedidos tardaron más de 30 s o devolvieron 503. La app lo informa y se puede responder a mano. Como el proveedor está aislado en `lib/ai/gemini.ts`, sumar Groq como alternativa automática sería el siguiente paso.
 - **Una respuesta guardada no se puede editar.** La ruta devuelve 409 a propósito para no pisar respuestas; editar necesitaría una acción explícita.
 - **No hay autenticación.** El enunciado no la evalúa. Con usuarios, la `anon` key y RLS por usuario reemplazarían el acceso con `service_role`.
+- **La ruta de borradores no tiene límite de pedidos.** Quien conozca la URL puede llamarla en loop y gastar la cuota de Gemini. Con la app publicada, habría que sumar autenticación o un rate limit por IP.
 - **No elegí bonus todavía.** El candidato es el orden por urgencia: 1–2★ sin responder arriba, las más viejas primero.

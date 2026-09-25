@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { LocationRow, RestaurantRow } from "@/lib/db/types";
+import type { ExportReview, ParsedExport, SkippedItem } from "@/types/import";
 
 const timestamp = z.iso.datetime({ offset: true });
 
@@ -19,7 +19,7 @@ const replySchema = z.object({
   replied_at: timestamp,
 });
 
-const reviewSchema = z.object({
+export const reviewSchema = z.object({
   id: z.string().min(1),
   location_id: z.string().min(1),
   author: z.string().trim().min(1),
@@ -37,20 +37,6 @@ const exportFileSchema = z.object({
   locations: z.array(locationSchema),
   reviews: z.array(z.unknown()),
 });
-
-export type ExportReview = z.infer<typeof reviewSchema>;
-
-export interface SkippedItem {
-  id: string;
-  reason: string;
-}
-
-export interface ParsedExport {
-  restaurants: RestaurantRow[];
-  locations: LocationRow[];
-  reviews: ExportReview[];
-  invalidReviews: SkippedItem[];
-}
 
 export class ExportFormatError extends Error {}
 

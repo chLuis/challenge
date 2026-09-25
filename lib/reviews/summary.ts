@@ -1,20 +1,7 @@
-import type { ReviewRow } from "@/lib/db/types";
+import type { ReviewRow } from "@/types/db";
+import type { LocationSummary, ReviewsSummary } from "@/types/reviews";
 
 type SummarizableReview = Pick<ReviewRow, "location_id" | "rating" | "reply_text">;
-
-export interface ReviewsSummary {
-  reviewCount: number;
-  ratedCount: number;
-  /** null when none of the reviews has a rating: there is no average to show. */
-  averageRating: number | null;
-  answeredCount: number;
-  /** Between 0 and 1. null when there are no reviews. */
-  answeredRatio: number | null;
-}
-
-export interface LocationSummary extends ReviewsSummary {
-  locationId: string;
-}
 
 export function isAnswered(review: Pick<ReviewRow, "reply_text">): boolean {
   return review.reply_text !== null;

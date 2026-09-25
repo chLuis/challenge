@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
-import { THEME_SCRIPT } from "@/lib/theme";
+import { Toaster } from "@/components/ui/toaster";
+import { getTheme } from "@/lib/theme";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -13,14 +14,19 @@ export const metadata: Metadata = {
   description: "Bandeja de reseñas por sede, con borradores de respuesta.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const theme = await getTheme();
+
   return (
-    // The inline script may set data-theme before React hydrates.
-    <html lang="es" className={`${geistSans.variable} h-full antialiased scrollbar-gutter-stable scroll-smooth`} suppressHydrationWarning>
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
-      </head>
-      <body className="min-h-full font-sans">{children}</body>
+    <html
+      lang="es"
+      data-theme={theme === "system" ? undefined : theme}
+      className={`${geistSans.variable} h-full antialiased scrollbar-gutter-stable scroll-smooth`}
+    >
+      <body className="min-h-full font-sans">
+        {children}
+        <Toaster theme={theme} />
+      </body>
     </html>
   );
 }

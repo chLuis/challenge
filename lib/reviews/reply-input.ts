@@ -1,8 +1,9 @@
 import { z } from "zod";
+import type { ParseResult, ReplyInput } from "@/types/reviews";
 
 export const MAX_REPLY_LENGTH = 2000;
 
-const replyInputSchema = z.object(
+export const replyInputSchema = z.object(
   {
     text: z
       .string({ error: "Falta el texto de la respuesta." })
@@ -12,10 +13,6 @@ const replyInputSchema = z.object(
   },
   { error: 'Mandá un JSON con la forma { "text": "..." }.' },
 );
-
-export type ReplyInput = z.infer<typeof replyInputSchema>;
-
-export type ParseResult<T> = { ok: true; value: T } | { ok: false; error: string };
 
 export function parseReplyInput(body: unknown): ParseResult<ReplyInput> {
   const result = replyInputSchema.safeParse(body);

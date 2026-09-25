@@ -1,10 +1,5 @@
-import {
-  RATING_OPTIONS,
-  STATUS_OPTIONS,
-  type RatingFilter,
-  type ReviewFilters,
-  type StatusFilter,
-} from "@/lib/reviews/filters";
+import { RATING_OPTIONS, STATUS_OPTIONS } from "@/lib/reviews/filters";
+import type { RatingFilter, ReviewFilters, StatusFilter } from "@/types/reviews";
 
 const STATUS_LABELS: Record<StatusFilter, string> = {
   "sin-responder": "Sin responder",
@@ -21,20 +16,20 @@ const RATING_LABELS: Record<RatingFilter, string> = {
   "sin-calificacion": "Sin calificación",
 };
 
-interface FiltersProps {
+interface FilterBarProps {
   filters: ReviewFilters;
   counts: Record<StatusFilter, number>;
   onChange: (filters: ReviewFilters) => void;
 }
 
 /** Status and rating. The location is picked from the summary cards. */
-export function Filters({ filters, counts, onChange }: FiltersProps) {
+export function FilterBar({ filters, counts, onChange }: FilterBarProps) {
   function update(change: Partial<ReviewFilters>) {
     onChange({ ...filters, ...change });
   }
 
   return (
-    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
       <div role="group" aria-label="Estado" className="flex rounded-lg border border-border bg-surface p-1 shadow-sm">
         {STATUS_OPTIONS.map((status) => {
           const selected = filters.status === status;
@@ -44,7 +39,7 @@ export function Filters({ filters, counts, onChange }: FiltersProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => update({ status })}
-              className={`flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1.5 text-xs transition-colors sm:flex-none sm:gap-1.5 sm:px-3 sm:text-sm ${
+              className={`flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1.5 text-xs transition-colors md:flex-none md:gap-1.5 md:px-3 sm:text-sm ${
                 selected ? "bg-primary text-primary-text" : "text-muted hover:text-text"
               }`}
             >

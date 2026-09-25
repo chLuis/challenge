@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { buildDraftPrompt, cleanDraft } from "@/lib/ai/draft-prompt";
-import { AiUnavailableError, generateText, isAiConfigured, type AiFailure } from "@/lib/ai/gemini";
+import { AiUnavailableError, generateText, isAiConfigured } from "@/lib/ai/gemini";
 import { MissingEnvError } from "@/lib/env";
 import { findReviewWithPlace } from "@/lib/reviews/repository";
 import { createAdminClient } from "@/lib/supabase/admin";
+import type { AiFailure } from "@/types/ai";
 
 export async function POST(_request: Request, ctx: RouteContext<"/api/reviews/[id]/draft">) {
   const { id } = await ctx.params;

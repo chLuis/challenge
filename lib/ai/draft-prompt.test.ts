@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { buildDraftPrompt, cleanDraft, type DraftContext } from "@/lib/ai/draft-prompt";
+import { buildDraftPrompt, cleanDraft } from "@/lib/ai/draft-prompt";
+import type { DraftContext } from "@/types/ai";
 
 const context: DraftContext = {
   restaurantName: "Sakura Sushi",

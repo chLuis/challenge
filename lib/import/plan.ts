@@ -1,16 +1,5 @@
-import type { LocationRow, RestaurantRow, ReviewRow } from "@/lib/db/types";
-import type { ExportReview, ParsedExport, SkippedItem } from "@/lib/import/export-file";
-
-export interface ImportPlan {
-  restaurants: RestaurantRow[];
-  locations: LocationRow[];
-  toCreate: ReviewRow[];
-  toUpdate: ReviewRow[];
-  unchanged: string[];
-  skipped: SkippedItem[];
-  /** Ids that appeared more than once in the file; only the newest version is kept. */
-  duplicates: string[];
-}
+import type { ReviewRow } from "@/types/db";
+import type { ExportReview, ImportPlan, ParsedExport, SkippedItem } from "@/types/import";
 
 type Reply = Pick<ReviewRow, "reply_text" | "replied_at">;
 

@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import type { ImportPlan } from "@/lib/import/plan";
+import type { ImportPlan } from "@/types/import";
 import { runImport } from "@/lib/import/run-import";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -11,17 +11,19 @@ async function main() {
 }
 
 function printReport(path: string, plan: ImportPlan) {
-  console.log(`Importado ${path}`);
-  console.log(`  creadas:      ${plan.toCreate.length}`);
-  console.log(`  actualizadas: ${plan.toUpdate.length}`);
-  console.log(`  sin cambios:  ${plan.unchanged.length}`);
-  console.log(`  salteadas:    ${plan.skipped.length}`);
+  console.log(
+    `Importado ${path}\n` +
+      `  creadas:      ${plan.toCreate.length}\n` +
+      `  actualizadas: ${plan.toUpdate.length}\n` +
+      `  sin cambios:  ${plan.unchanged.length}\n` +
+      `  salteadas:    ${plan.skipped.length}`,
+  );
 
   for (const { id, reason } of plan.skipped) {
-    console.log(`    - ${id}: ${reason}`);
+    console.log(`    - ${id}: ${reason}\n`);
   }
   for (const id of plan.duplicates) {
-    console.log(`  ${id} aparece más de una vez; quedó la versión con updated_at más nuevo`);
+    console.log(`  ${id} aparece más de una vez; quedó la versión con updated_at más nuevo\n`);
   }
 }
 

@@ -1,13 +1,11 @@
 import { ApiError, GoogleGenAI, ThinkingLevel } from "@google/genai";
-import type { DraftPrompt } from "@/lib/ai/draft-prompt";
 import { requireEnv } from "@/lib/env";
+import type { AiFailure, DraftPrompt } from "@/types/ai";
 
 // Older models (gemini-2.5-flash) are closed to new API keys; GEMINI_MODEL
 // lets the deploy switch without a code change.
 const DEFAULT_MODEL = "gemini-3.6-flash";
 const TIMEOUT_MS = 30_000;
-
-export type AiFailure = "busy" | "timeout" | "failed";
 
 export class AiUnavailableError extends Error {
   constructor(readonly failure: AiFailure, options?: ErrorOptions) {

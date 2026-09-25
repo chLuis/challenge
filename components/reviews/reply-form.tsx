@@ -2,8 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition, type FormEvent } from "react";
-import { Button } from "@/components/button";
+import { toast } from "sonner";
+import { DraftNotice } from "@/components/reviews/draft-notice";
+import { Button } from "@/components/ui/button";
+import { requestDraft, submitReply } from "@/lib/reviews/reply-api";
 import { MAX_REPLY_LENGTH } from "@/lib/reviews/reply-input";
+import { LoaderCircle, LucideSparkles } from "lucide-react";
 
 /** Where the text in the field came from, so an unsaved model draft never looks like a reply. */
 type Origin = "manual" | "ai" | "ai-edited";
@@ -12,10 +16,9 @@ interface ReplyFormProps {
   reviewId: string;
   author: string;
   aiConfigured: boolean;
-  onSaved: () => void;
 }
 
-export function ReplyForm({ reviewId, author, aiConfigured, onSaved }: ReplyFormProps) {
+export function ReplyForm({ reviewId, author, aiConfigured }: ReplyFormProps) {
   const router = useRouter();
   const [text, setText] = useState("");
   const [origin, setOrigin] = useState<Origin>("manual");
@@ -67,7 +70,7 @@ export function ReplyForm({ reviewId, author, aiConfigured, onSaved }: ReplyForm
     if (failure) {
       setError(failure);
     } else {
-      onSaved();
+      toast.success(`Guardamos la respuesta a ${author}.`);
       startTransition(() => router.refresh());
     }
   }
@@ -78,18 +81,7 @@ export function ReplyForm({ reviewId, author, aiConfigured, onSaved }: ReplyForm
         Tu respuesta a {author}
       </label>
 
-      {isDraft && (
-        <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 rounded-md bg-draft-soft px-3 py-2 text-sm text-draft">
-          <p>
-            <span aria-hidden>✦ </span>
-            {origin === "ai" ? "Borrador escrito por IA" : "Borrador de IA con tus cambios"}. Todavía no se guardó:
-            revisalo antes de guardar.
-          </p>
-          <button type="button" onClick={discardDraft} disabled={busy} className="underline underline-offset-2">
-            Descartar borrador
-          </button>
-        </div>
-      )}
+      {isDraft && <DraftNotice edited={origin === "ai-edited"} disabled={busy} onDiscard={discardDraft} />}
 
       <textarea
         id={fieldId}
@@ -132,7 +124,7 @@ export function ReplyForm({ reviewId, author, aiConfigured, onSaved }: ReplyForm
           {generateLabel({ aiConfigured, generating, isDraft })}
         </Button>
         <Button type="submit" disabled={busy || text.trim().length === 0}>
-          {saving || isRefreshing ? "Guardando…" : "Guardar respuesta"}
+          {saving || isRefreshing ? <span className="flex items-center justify-center flex-nowrap gap-2"><LoaderCircle size={16} className="animate-spin"/> Guardando…</span> : "Guardar respuesta"}
         </Button>
       </div>
     </form>
@@ -147,35 +139,6 @@ interface GenerateState {
 
 function generateLabel({ aiConfigured, generating, isDraft }: GenerateState) {
   if (!aiConfigured) return "IA no configurada";
-  if (generating) return "Generando…";
-  return isDraft ? "Generar otro" : "Generar con IA";
-}
-
-async function requestDraft(reviewId: string): Promise<{ draft: string } | { error: string }> {
-  try {
-    const response = await fetch(`/api/reviews/${encodeURIComponent(reviewId)}/draft`, { method: "POST" });
-    const body: { draft?: string; error?: string } | null = await response.json().catch(() => null);
-
-    if (response.ok && body?.draft) return { draft: body.draft };
-    return { error: body?.error ?? "No pudimos generar el borrador. Probá de nuevo." };
-  } catch {
-    return { error: "No hay conexión. Probá generar de nuevo en un momento." };
-  }
-}
-
-/** Returns an error message to show, or null when the reply was saved. */
-async function submitReply(reviewId: string, text: string): Promise<string | null> {
-  try {
-    const response = await fetch(`/api/reviews/${encodeURIComponent(reviewId)}/reply`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    });
-    if (response.ok) return null;
-
-    const body: { error?: string } | null = await response.json().catch(() => null);
-    return body?.error ?? "No pudimos guardar la respuesta. Probá de nuevo.";
-  } catch {
-    return "No hay conexión. Tu texto sigue acá; probá guardar de nuevo.";
-  }
+  if (generating) return <span className="flex items-center justify-center flex-nowrap gap-2"><LoaderCircle size={16} className="animate-spin"/> Generando…</span>;
+  return isDraft ? "Generar otro" : (<span className="flex items-center justify-center flex-nowrap gap-2"><LucideSparkles size={16} /> Generar con IA</span>);
 }

@@ -1,4 +1,4 @@
-export type RatingTone = "good" | "regular" | "bad";
+import type { RatingTone } from "@/types/reviews";
 
 /**
  * One scale for single ratings and for averages, so the same color always

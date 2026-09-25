@@ -1,21 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { LocationRow, RestaurantRow, ReviewRow } from "@/lib/db/types";
+import type { LocationRow, RestaurantRow, ReviewRow } from "@/types/db";
+import type { InboxData, ReviewWithPlace, SaveReplyResult } from "@/types/reviews";
 
 export const REVIEW_COLUMNS =
   "id, location_id, author, rating, text, published_at, updated_at, reply_text, replied_at";
 
-export interface LocationView {
-  id: string;
-  name: string;
-  restaurantName: string;
-}
-
-export interface Inbox {
-  locations: LocationView[];
-  reviews: ReviewRow[];
-}
-
-export async function loadInbox(db: SupabaseClient): Promise<Inbox> {
+export async function loadInbox(db: SupabaseClient): Promise<InboxData> {
   const [restaurants, locations, reviews] = await Promise.all([
     db.from("restaurants").select("id, name").order("name"),
     db.from("locations").select("id, restaurant_id, name").order("name"),
@@ -37,12 +27,6 @@ export async function loadInbox(db: SupabaseClient): Promise<Inbox> {
     })),
     reviews: reviews.data as ReviewRow[],
   };
-}
-
-export interface ReviewWithPlace {
-  review: ReviewRow;
-  locationName: string;
-  restaurantName: string;
 }
 
 interface ReviewWithPlaceRow extends ReviewRow {
@@ -70,10 +54,6 @@ export async function findReviewWithPlace(
   };
 }
 
-export type SaveReplyResult =
-  | { ok: true; review: ReviewRow }
-  | { ok: false; reason: "not_found" | "already_answered" };
-
 /**
  * Only writes when the review has no reply yet, so two people answering at
  * the same time cannot overwrite each other.
@@ -96,7 +76,7 @@ export async function saveReply(
   if (data) return { ok: true, review: data as ReviewRow };
 
   const exists = await reviewExists(db, reviewId);
-  return { ok: false, reason: exists ? "already_answered" : "not_found" };
+  return { ok: false, reason: exists ? "ya_respondida" : "no_se_encontro" };
 }
 
 async function reviewExists(db: SupabaseClient, reviewId: string): Promise<boolean> {

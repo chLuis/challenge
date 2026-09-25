@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import { Button } from "@/components/button";
+import { Button } from "@/components/ui/button";
 
 export default function InboxError({ error, retry }: { error: Error & { digest?: string }; retry: () => void }) {
   useEffect(() => {

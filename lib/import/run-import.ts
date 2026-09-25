@@ -1,8 +1,9 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { ReviewRow } from "@/lib/db/types";
 import { parseExportFile } from "@/lib/import/export-file";
-import { planImport, type ImportPlan } from "@/lib/import/plan";
+import { planImport } from "@/lib/import/plan";
 import { REVIEW_COLUMNS } from "@/lib/reviews/repository";
+import type { ReviewRow } from "@/types/db";
+import type { ImportPlan } from "@/types/import";
 
 export async function runImport(db: SupabaseClient, raw: unknown): Promise<ImportPlan> {
   const file = parseExportFile(raw);

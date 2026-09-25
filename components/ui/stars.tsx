@@ -1,4 +1,5 @@
-import { ratingTone, type RatingTone } from "@/lib/reviews/rating-tone";
+import { ratingTone } from "@/lib/reviews/rating-tone";
+import type { RatingTone } from "@/types/reviews";
 
 export const TONE_TEXT: Record<RatingTone, string> = {
   good: "text-good",

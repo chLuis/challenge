@@ -5,7 +5,7 @@
 
    Each token is written once as light-dark(light, dark). color-scheme picks
    the side: the system preference by default, or the one forced by
-   html[data-theme], which an inline script sets before the first paint. */
+   html[data-theme], which the layout renders from the theme cookie. */
 :root {
   color-scheme: light dark;
 
@@ -50,23 +50,4 @@
 body {
   background: var(--bg);
   color: var(--text);
-}
-
-/* Added only while the person switches themes (see lib/theme.ts). */
-.theme-transition,
-.theme-transition *,
-.theme-transition *::before,
-.theme-transition *::after {
-  transition-property: background-color, border-color, color, fill, stroke, box-shadow !important;
-  transition-duration: 300ms !important;
-  transition-timing-function: ease !important;
-}
-
-/* The theme toggle highlights its option from the same attribute the inline
-   script sets, so it is correct before React loads. */
-:root:not([data-theme]) [data-theme-option="system"],
-:root[data-theme="light"] [data-theme-option="light"],
-:root[data-theme="dark"] [data-theme-option="dark"] {
-  background: var(--primary);
-  color: var(--primary-text);
 }

@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import type { ReviewRow } from "@/lib/db/types";
+import type { ReviewRow } from "@/types/db";
 import { parseExportFile } from "@/lib/import/export-file";
 import { planImport } from "@/lib/import/plan";
 import { summarizeLocation } from "@/lib/reviews/summary";

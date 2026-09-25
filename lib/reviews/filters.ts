@@ -1,17 +1,10 @@
-import type { ReviewRow } from "@/lib/db/types";
 import { isAnswered } from "@/lib/reviews/summary";
+import type { ReviewRow } from "@/types/db";
+import type { RatingFilter, ReviewFilters, StatusFilter } from "@/types/reviews";
 
 export const STATUS_OPTIONS = ["sin-responder", "respondidas", "todas"] as const;
-export type StatusFilter = (typeof STATUS_OPTIONS)[number];
 
 export const RATING_OPTIONS = ["1", "2", "3", "4", "5", "sin-calificacion"] as const;
-export type RatingFilter = (typeof RATING_OPTIONS)[number];
-
-export interface ReviewFilters {
-  location: string | null;
-  rating: RatingFilter | null;
-  status: StatusFilter;
-}
 
 /** Opening the app with no filters shows what is left to answer. */
 export const DEFAULT_STATUS: StatusFilter = "sin-responder";

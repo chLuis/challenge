@@ -15,7 +15,7 @@ export async function POST(request: Request, ctx: RouteContext<"/api/reviews/[id
     const result = await saveReply(createAdminClient(), id, input.value.text);
     if (result.ok) return NextResponse.json({ review: result.review });
 
-    return result.reason === "not_found"
+    return result.reason === "no_se_encontro"
       ? errorResponse(404, `No existe la reseña ${id}.`)
       : errorResponse(409, "Esta reseña ya tiene una respuesta guardada.");
   } catch (error) {
