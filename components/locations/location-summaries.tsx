@@ -10,12 +10,6 @@ interface LocationSummariesProps {
   onSelect: (locationId: string | null) => void;
 }
 
-/**
- * The summary doubles as the location filter: picking a card narrows the list to it.
- * Below lg it has two rows of the same height, "every location" on its own and
- * the locations side by side, so nothing scrolls sideways; each card then shows
- * a compact version of its numbers.
- */
 export function LocationSummaries({ locations, reviews, selected, onSelect }: LocationSummariesProps) {
   return (
     <ul className="grid grid-cols-3 gap-2 sm:gap-3 lg:grid-cols-1">

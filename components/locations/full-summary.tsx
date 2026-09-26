@@ -4,7 +4,6 @@ import { ratingTone } from "@/lib/reviews/rating-tone";
 import type { ReviewsSummary, SummaryItem } from "@/types/reviews";
 import AnsweredBar from "./answered-bar";
 
-/** Desktop sidebar: every number, stacked. */
 export function FullSummary({ item }: { item: SummaryItem }) {
   const { summary } = item;
   const pending = summary.reviewCount - summary.answeredCount;

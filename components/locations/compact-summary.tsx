@@ -4,8 +4,6 @@ import { ratingTone } from "@/lib/reviews/rating-tone";
 import type { ReviewsSummary, SummaryItem } from "@/types/reviews";
 import AnsweredBar from "@/components/locations/answered-bar";
 
-
-/** Mobile, full-width row: name on the left, average and share answered on the right. */
 export function CompactOverall({ item }: { item: SummaryItem }) {
   const { summary } = item;
   return (
@@ -24,7 +22,6 @@ export function CompactOverall({ item }: { item: SummaryItem }) {
   );
 }
 
-/** Mobile, one third of a row: name, average and what is left to answer. */
 export function CompactLocation({ item }: { item: SummaryItem }) {
   const { summary } = item;
   const pending = summary.reviewCount - summary.answeredCount;

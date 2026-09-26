@@ -28,7 +28,6 @@ export interface LocationSummary extends ReviewsSummary {
   locationId: string;
 }
 
-/** One card of the summary sidebar. */
 export interface SummaryItem {
   /** null stands for "every location". */
   locationId: string | null;
