@@ -17,16 +17,23 @@ Una pantalla para el grupo gastronómico (dos restaurantes, tres sedes) que entr
 
 Requisitos: Node 22 o más nuevo y un proyecto de Supabase en el plan gratuito.
 
-**1. Crear las tablas.** En Supabase, abrí **SQL Editor**, pegá [`supabase/schema.sql`](supabase/schema.sql) y dale a **Run**. Se puede correr más de una vez.
+**1. Clonar el repositorio:**
 
-**2. Instalar y crear el archivo de variables:**
+```bash
+git clone https://github.com/chLuis/challenge.git
+cd challenge
+```
+
+**2. Crear las tablas.** En Supabase, abrí **SQL Editor**, pegá [`supabase/schema.sql`](supabase/schema.sql) y dale a **Run**. Se puede correr más de una vez.
+
+**3. Instalar y crear el archivo de variables:**
 
 ```bash
 npm install
 cp .env.example .env.local
 ```
 
-**3. Completar `.env.local`** antes de seguir; sin estas variables el import no puede escribir en la base. `.env.local` no se sube al repo, y en [`.env.example`](.env.example) están los mismos nombres, sin valores.
+**4. Completar `.env.local`** antes de seguir; sin estas variables el import no puede escribir en la base. `.env.local` no se sube al repo, y en [`.env.example`](.env.example) están los mismos nombres, sin valores.
 
 | Variable | Para qué | Dónde se consigue |
 |---|---|---|
@@ -39,7 +46,7 @@ Si falta alguna, la app lo dice en lugar de romperse:
 - Sin las de Supabase, la pantalla explica qué variable falta y de dónde sale.
 - Sin `GEMINI_API_KEY`, el botón pasa a decir **"IA no configurada"** y el resto funciona igual.
 
-**4. Importar las reseñas y levantar la app:**
+**5. Importar las reseñas y levantar la app:**
 
 ```bash
 npm run import               # carga reviews.json en Supabase
