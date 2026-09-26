@@ -1,6 +1,6 @@
 export function SetupNotice({ missing }: { missing: string[] }) {
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-col gap-3 px-4 py-16">
+    <main className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-4 py-16">
       <h1 className="text-xl font-semibold">Falta configurar la base de datos</h1>
       <p className="text-muted">
         La app no encuentra estas variables de entorno, así que no puede leer las reseñas:

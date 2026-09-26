@@ -135,7 +135,7 @@ Importado reviews.json
 
 ### IA (Gemini)
 
-- **La llamada sale solo del servidor**, en `POST /api/reviews/[id]/draft`. **El navegador manda solo el id de la reseña**: el servidor busca el texto, la calificación, el restaurante y la sede en la base. Así nadie puede usar la ruta para mandarle al modelo un texto propio. Revisé el bundle del navegador y el valor de la llave no aparece.
+- **La llamada sale solo del servidor**, en `POST /api/reviews/[id]/draft`. **El navegador manda solo el id de la reseña**: el servidor busca el texto, la calificación, el restaurante y la sede en la base. Así nadie puede usar la ruta para mandarle al modelo un texto propio.
 - **El prompt** (`lib/ai/draft-prompt.ts`) lleva el restaurante, la sede, el autor, la calificación y el texto. **El tono cambia según la calificación:**
 
   | Calificación | Tono |
@@ -150,7 +150,7 @@ Importado reviews.json
   - Español rioplatense, dos o tres oraciones.
   - No inventar descuentos, teléfonos ni nombres, y no prometer compensaciones.
   - El texto de la reseña va delimitado y marcado como dato, para que el modelo no lo tome como instrucciones.
-- **Modelo:** `gemini-3.6-flash`, con razonamiento mínimo porque un borrador de tres oraciones no lo necesita, y timeout de 30 s. `gemini-2.5-flash` ya no está disponible para llaves nuevas.
+- **Modelo:** `gemini-3.6-flash`, con razonamiento mínimo porque un borrador de tres oraciones no lo necesita, y timeout de 30 s.
 - **Errores con mensaje claro, nunca un 500:**
 
   | Caso | Código |
@@ -275,6 +275,5 @@ Cada parte está separada del resto. La lógica de negocio vive en funciones pur
 - **La importación no corre en una transacción.** Si se corta a mitad de camino, volver a correr `npm run import` completa lo que falta, porque cada paso es idempotente. Para hacerlo atómico usaría una función de Postgres llamada por RPC.
 - **El free tier de Gemini a veces se satura.** En las pruebas, algunos pedidos tardaron más de 30 s o devolvieron 503. La app lo informa y se puede responder a mano. Como el proveedor está aislado en `lib/ai/gemini.ts`, sumar Groq como alternativa automática sería el siguiente paso.
 - **Una respuesta guardada no se puede editar.** La ruta devuelve 409 a propósito para no pisar respuestas; editar necesitaría una acción explícita.
-- **No hay autenticación.** El enunciado no la evalúa. Con usuarios, la `anon` key y RLS por usuario reemplazarían el acceso con `service_role`.
+- **No hay autenticación.** Con usuarios, la `anon` key y RLS por usuario reemplazarían el acceso con `service_role`.
 - **La ruta de borradores no tiene límite de pedidos.** Quien conozca la URL puede llamarla en loop y gastar la cuota de Gemini. Con la app publicada, habría que sumar autenticación o un rate limit por IP.
-- **Solo hice un bonus, el orden por urgencia**, como pide el enunciado. Los otros tres (gráfico semanal, import como endpoint protegido y autor de cada respuesta) quedaron afuera.
