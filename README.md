@@ -2,7 +2,7 @@
 
 Una pantalla para el grupo gastronómico (dos restaurantes, tres sedes) que entra cada mañana a ver qué reseñas faltan contestar, pide un borrador a un modelo de lenguaje, lo ajusta y responde. Arriba se ve cuánto queda pendiente, al costado el resumen de cada sede y abajo la lista.
 
-- **App publicada:** [Link a la web](https://challenge.luischrestia.com.ar/)
+- **App publicada:** [challenge.luischrestia.com.ar](https://challenge.luischrestia.com.ar/) · en Vercel: [challenge-beta-liart.vercel.app](https://challenge-beta-liart.vercel.app/)
 - **Stack:** Next.js 16 (App Router) + TypeScript, Supabase (Postgres), Gemini para los borradores, Tailwind CSS 4, Sonner para los avisos, Vitest.
 
 ![Escritorio, tema claro](docs/screenshots/escritorio-claro.png)
@@ -17,19 +17,16 @@ Una pantalla para el grupo gastronómico (dos restaurantes, tres sedes) que entr
 
 Requisitos: Node 22 o más nuevo y un proyecto de Supabase en el plan gratuito.
 
-1. En Supabase, abrí **SQL Editor**, pegá [`supabase/schema.sql`](supabase/schema.sql) y dale a **Run**. Crea las tablas; se puede correr más de una vez.
-2. Después:
+**1. Crear las tablas.** En Supabase, abrí **SQL Editor**, pegá [`supabase/schema.sql`](supabase/schema.sql) y dale a **Run**. Se puede correr más de una vez.
+
+**2. Instalar y crear el archivo de variables:**
 
 ```bash
 npm install
-cp .env.example .env.local   # completar los valores (ver abajo)
-npm run import               # carga reviews.json en Supabase
-npm run dev                  # http://localhost:3000
+cp .env.example .env.local
 ```
 
-### Variables de entorno
-
-Van en `.env.local`, que no se sube, y en Vercel (Project → Settings → Environment Variables). En [`.env.example`](.env.example) están los nombres, sin valores.
+**3. Completar `.env.local`** antes de seguir; sin estas variables el import no puede escribir en la base. `.env.local` no se sube al repo, y en [`.env.example`](.env.example) están los mismos nombres, sin valores.
 
 | Variable | Para qué | Dónde se consigue |
 |---|---|---|
@@ -41,6 +38,21 @@ Van en `.env.local`, que no se sube, y en Vercel (Project → Settings → Envir
 Si falta alguna, la app lo dice en lugar de romperse:
 - Sin las de Supabase, la pantalla explica qué variable falta y de dónde sale.
 - Sin `GEMINI_API_KEY`, el botón pasa a decir **"IA no configurada"** y el resto funciona igual.
+
+**4. Importar las reseñas y levantar la app:**
+
+```bash
+npm run import               # carga reviews.json en Supabase
+npm run dev                  # http://localhost:3000
+```
+
+### Publicarlo en Vercel
+
+1. Importá el repositorio en Vercel.
+2. Cargá las mismas variables en Project → Settings → Environment Variables.
+3. Hacé el deploy.
+
+**El import no corre en Vercel: se corre en local.** La app publicada lee la misma base de Supabase que usás en local, así que alcanza con correr `npm run import` una vez desde tu máquina, con `.env.local` apuntando a esa base. Si llega un archivo nuevo, se vuelve a correr igual, desde local.
 
 ### Comandos
 
@@ -70,7 +82,7 @@ El archivo llega con varios problemas a propósito. Qué hace la app con cada un
 
 | Caso | Decisión | Dónde está |
 |---|---|---|
-| **rv-205 aparece dos veces** (la segunda es una edición con otra calificación) | Queda la versión con `updated_at` más nuevo, sin importar el orden en el archivo. Rv-205 termina con 3★, no con 1★. El import avisa que la encontró duplicada. | `lib/import/plan.ts` |
+| **rv-205 aparece dos veces** (la segunda es una edición con otra calificación) | Queda la versión con `updated_at` más nuevo, sin importar el orden en el archivo. Rv-205 termina con 3★, no con 1★. Si dos versiones tienen el mismo `updated_at`, queda la que aparece más abajo en el archivo, porque es la última que se exportó. El import avisa que la encontró duplicada. | `lib/import/plan.ts` |
 | **rv-108 no tiene calificación** | Se importa con `rating = null` y se muestra "Sin calificación". **No entra en el promedio**, pero sí cuenta en el total de reseñas y en el % respondido, porque existe y hay que contestarla. | `lib/reviews/summary.ts` |
 | **rv-301 apunta a `loc-99`, que no existe** | No se importa, y **la sede nunca se crea sola**. El import informa `rv-301: la sede loc-99 no existe`. Además, la foreign key de la base impediría insertarla. | `lib/import/plan.ts`, `supabase/schema.sql` |
 | **Belgrano no tiene reseñas** | Su promedio y su % respondido son `null`, no 0. La pantalla dice "Sin reseñas todavía" en vez de mostrar un promedio de cero. | `lib/reviews/summary.ts`, `components/locations/` |
@@ -98,7 +110,9 @@ Importado reviews.json
   sin cambios:  0
   salteadas:    1
     - rv-301: la sede loc-99 no existe
+
   rv-205 aparece más de una vez; quedó la versión con updated_at más nuevo
+
 ```
 
 ---
@@ -159,6 +173,7 @@ El update solo escribe si la reseña **todavía no tiene respuesta** (`WHERE rep
 ## La pantalla
 
 - **Jerarquía.** Lo primero que se ve es cuánto queda pendiente y por dónde empezar, por ejemplo "**10 reseñas sin responder** · 2 son de 1 o 2 estrellas: conviene empezar por esas". La lista abre por defecto en **Sin responder**, que es lo que la persona busca a la mañana.
+- **Orden por urgencia.** Las reseñas sin responder van primero: menos estrellas arriba y, con las mismas estrellas, la que lleva más tiempo esperando. Una sin calificación va después de las calificadas, porque nada indica que sea una queja. Las respondidas quedan abajo, de la más nueva a la más vieja. Vive en `lib/reviews/sort.ts`, con tests.
 - **Resumen por sede.** En escritorio es una columna fija a la izquierda. En el celular son dos filas de la misma altura, "todas las sedes" y las tres sedes, con una versión compacta de los números y sin scroll horizontal. **Cada tarjeta funciona también como filtro de sede.**
 - **Estados:**
 
@@ -180,7 +195,8 @@ El update solo escribe si la reseña **todavía no tiene respuesta** (`WHERE rep
 - **Color con significado, y poco:**
   - Solo la calificación lleva color: verde para 4 o más, amarillo desde 3, rojo por debajo de 3. Es la misma escala para las estrellas y los promedios (`lib/reviews/rating-tone.ts`).
   - El violeta se usa únicamente para el texto que escribió el modelo.
-  - Todo lo demás es neutro.
+  - El ámbar marca solo cuántas reseñas quedan sin responder en cada sede, para que se note a simple vista.
+  - Todo lo demás es neutro, incluidos los botones, que comparten un único color principal.
 - **Texto y fechas:**
   - Etiquetas cortas y en frase normal.
   - Las fechas se leen como las diría una persona ("ayer", "hace 4 días", "el 2 de septiembre"), según el calendario de Buenos Aires.
@@ -211,6 +227,7 @@ types/                           tipos compartidos: db, reviews, import, ai, the
 lib/
   reviews/summary.ts             resumen por sede (función pura)
   reviews/filters.ts             filtros ↔ URL (función pura)
+  reviews/sort.ts                orden por urgencia (función pura)
   reviews/rating-tone.ts         escala bueno / regular / malo
   reviews/repository.ts          lecturas y escrituras en Supabase
   reviews/get-inbox.ts           datos de la bandeja por request, o qué variables faltan
@@ -228,16 +245,17 @@ Cada parte está separada del resto. La lógica de negocio vive en funciones pur
 
 ## Tests
 
-`npm test` corre **43 tests** en 6 archivos. Prueban las reglas, no una foto de la salida actual:
+`npm test` corre **49 tests** en 7 archivos. Prueban las reglas, no una foto de la salida actual:
 
 - **Resumen:** una sede sin reseñas no tiene promedio ni %, una reseña sin calificación no entra en el promedio pero cuenta en el total, el caso normal, y el total de todas las sedes.
 - **Con el `reviews.json` real:** Palermo 3,63 sobre 8 calificadas, Centro 6 reseñas y 3,67, Belgrano sin datos.
 - **Importación:**
   - Idempotencia: la segunda corrida no escribe nada.
-  - Duplicado resuelto por `updated_at`, sin importar el orden.
+  - Duplicado resuelto por `updated_at`, sin importar el orden; con empate, queda el último del archivo.
   - Un archivo viejo no revierte, y `reply: null` no borra respuestas.
   - Sede inexistente salteada y nunca creada.
   - Una fila inválida se reporta sin frenar el resto.
+- **Orden por urgencia:** menos estrellas primero, las más viejas primero, sin calificación después de las calificadas, respondidas al final, y sin modificar el arreglo que recibe.
 - **Filtros:** la lectura desde la URL, la ida y vuelta con el query string, la combinación de filtros y los valores inválidos.
 - **Prompt:** lleva restaurante, calificación y texto; 1★ pide disculpas y 5★ no; sin calificación; sin texto; la reseña va separada de las instrucciones.
 - **Formato de fechas y números**, en el calendario de Buenos Aires.
@@ -252,4 +270,4 @@ Cada parte está separada del resto. La lógica de negocio vive en funciones pur
 - **Una respuesta guardada no se puede editar.** La ruta devuelve 409 a propósito para no pisar respuestas; editar necesitaría una acción explícita.
 - **No hay autenticación.** El enunciado no la evalúa. Con usuarios, la `anon` key y RLS por usuario reemplazarían el acceso con `service_role`.
 - **La ruta de borradores no tiene límite de pedidos.** Quien conozca la URL puede llamarla en loop y gastar la cuota de Gemini. Con la app publicada, habría que sumar autenticación o un rate limit por IP.
-- **No elegí bonus todavía.** El candidato es el orden por urgencia: 1–2★ sin responder arriba, las más viejas primero.
+- **Solo hice un bonus, el orden por urgencia**, como pide el enunciado. Los otros tres (gráfico semanal, import como endpoint protegido y autor de cada respuesta) quedaron afuera.

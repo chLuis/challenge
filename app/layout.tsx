@@ -21,7 +21,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="es"
       data-theme={theme === "system" ? undefined : theme}
-      className={`${geistSans.variable} h-full antialiased scrollbar-gutter-stable scroll-smooth`}
+      className={`${geistSans.variable} h-full antialiased scrollbar-gutter-stable`}
     >
       <body className="min-h-full font-sans">
         {children}

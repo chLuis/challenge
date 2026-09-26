@@ -2,6 +2,8 @@ import { TONE_TEXT } from "@/components/ui/stars";
 import { formatAverage, formatPercent } from "@/lib/format";
 import { ratingTone } from "@/lib/reviews/rating-tone";
 import type { ReviewsSummary, SummaryItem } from "@/types/reviews";
+import AnsweredBar from "@/components/locations/answered-bar";
+
 
 /** Mobile, full-width row: name on the left, average and share answered on the right. */
 export function CompactOverall({ item }: { item: SummaryItem }) {
@@ -38,6 +40,7 @@ export function CompactLocation({ item }: { item: SummaryItem }) {
           <p className="truncate text-xs text-muted tabular-nums">
             {pending === 0 ? "Todo respondido" : `${pending} ${pending === 1 ? "pendiente" : "pendientes"}`}
           </p>
+          <AnsweredBar summary={summary} />
         </>
       )}
     </div>

@@ -19,7 +19,7 @@ export function ReviewCard({ review, location, aiConfigured }: ReviewCardProps) 
       : null;
 
   return (
-    <article className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-5 hover:shadow-sm hover:shadow-primary duration-200">
+    <article className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-4 shadow-sm sm:p-5 hover:border-text/50 duration-200">
       <header className="flex items-start gap-3">
         <Initials name={review.author} />
         <div className="min-w-0 flex-1">

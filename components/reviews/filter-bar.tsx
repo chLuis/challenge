@@ -30,7 +30,7 @@ export function FilterBar({ filters, counts, onChange }: FilterBarProps) {
 
   return (
     <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-      <div role="group" aria-label="Estado" className="flex rounded-lg border border-border bg-surface p-1 shadow-sm">
+      <div role="group" aria-label="Estado" className="flex h-10 rounded-lg border border-border bg-surface p-1 shadow-sm">
         {STATUS_OPTIONS.map((status) => {
           const selected = filters.status === status;
           return (
@@ -39,12 +39,12 @@ export function FilterBar({ filters, counts, onChange }: FilterBarProps) {
               type="button"
               aria-pressed={selected}
               onClick={() => update({ status })}
-              className={`cursor-pointer flex flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 py-1.5 text-xs transition-colors md:flex-none md:gap-1.5 md:px-3 sm:text-sm ${
+              className={`cursor-pointer flex h-full flex-1 items-center justify-center gap-1 whitespace-nowrap rounded-md px-1.5 text-xs transition-colors md:flex-none md:gap-1.5 md:px-3 sm:text-sm ${
                 selected ? "bg-primary text-primary-text" : "text-muted hover:text-text"
               }`}
             >
               {STATUS_LABELS[status]}
-              <span className="tabular-nums border rounded-full w-7 h-7 flex items-center justify-center">{counts[status]}</span>
+              <span className="flex h-5 min-w-5 items-center justify-center rounded-full border px-1 text-xs tabular-nums">{counts[status]}</span>
             </button>
           );
         })}
@@ -53,7 +53,7 @@ export function FilterBar({ filters, counts, onChange }: FilterBarProps) {
       <label className="flex items-center gap-2 text-sm text-muted">
         Calificación
         <select
-          className="h-12.5 rounded-lg border border-border bg-surface px-2.5 text-sm text-text shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          className="h-10 rounded-lg border border-border bg-surface px-2.5 text-sm text-text shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
           value={filters.rating ?? ""}
           onChange={(event) => update({ rating: (event.target.value || null) as RatingFilter | null })}
         >

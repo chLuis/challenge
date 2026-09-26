@@ -52,14 +52,14 @@ function toneFor(rating: number | null): string {
 
   if (rating === 4) {
     return (
-      "Reseña muy buena. Tono: alegre y agradecido. Agradecé la confianza en el servicio, " +
-      "destacá lo positivo que mencionan y tomá nota amablemente si dejaron alguna sugerencia menor."
+      "Es una reseña muy buena. Agradecé con calidez, destacá lo positivo que menciona " +
+      "y tomá nota amablemente si dejó alguna sugerencia menor."
     );
   }
 
   return (
-    "Reseña excelente. Tono: muy entusiasta, cálido y cercano. Agradecé el halago mencionando un detalle concreto que destacaron, " +
-    "y cerrá invitándolos a volver"
+    "Es una reseña excelente. Agradecé con entusiasmo mencionando un detalle concreto que destacó " +
+    "y cerrá invitando a volver."
   );
 }
 

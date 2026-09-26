@@ -1,7 +1,8 @@
 import { TONE_TEXT } from "@/components/ui/stars";
-import { formatAverage, formatPercent } from "@/lib/format";
+import { formatAverage } from "@/lib/format";
 import { ratingTone } from "@/lib/reviews/rating-tone";
 import type { ReviewsSummary, SummaryItem } from "@/types/reviews";
+import AnsweredBar from "./answered-bar";
 
 /** Desktop sidebar: every number, stacked. */
 export function FullSummary({ item }: { item: SummaryItem }) {
@@ -14,7 +15,7 @@ export function FullSummary({ item }: { item: SummaryItem }) {
         <div className="flex items-center justify-between gap-2">
           <p className="font-medium">{item.name}</p>
           {pending > 0 && (
-            <span className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums bg-amber-800 text-white">
+            <span className="shrink-0 rounded-full px-2 py-0.5 text-xs font-medium tabular-nums bg-pending text-pending-text">
               {pending} sin responder
             </span>
           )}
@@ -52,16 +53,3 @@ function Average({ summary }: { summary: ReviewsSummary }) {
   );
 }
 
-function AnsweredBar({ summary }: { summary: ReviewsSummary }) {
-  const ratio = summary.answeredRatio ?? 0;
-  return (
-    <div>
-      <div className="h-1.5 overflow-hidden rounded-full bg-border" aria-hidden>
-        <div className="h-full rounded-full bg-primary" style={{ width: `${ratio * 100}%` }} />
-      </div>
-      <p className="mt-1.5 text-xs text-muted tabular-nums">
-        {formatPercent(ratio)} respondidas · {summary.answeredCount} de {summary.reviewCount}
-      </p>
-    </div>
-  );
-}

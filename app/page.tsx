@@ -9,13 +9,11 @@ export default async function InboxPage() {
   if (!result.ok) return <SetupNotice missing={result.missing} />;
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-3 sm:px-6">
-      <Inbox
-        locations={result.inbox.locations}
-        reviews={result.inbox.reviews}
-        aiConfigured={isAiConfigured()}
-        themeToggle={<ThemeToggle />}
-      />
-    </main>
+    <Inbox
+      locations={result.inbox.locations}
+      reviews={result.inbox.reviews}
+      aiConfigured={isAiConfigured()}
+      themeToggle={<ThemeToggle />}
+    />
   );
 }

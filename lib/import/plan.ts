@@ -62,6 +62,7 @@ export function planImport(file: ParsedExport, existing: ReviewRow[]): ImportPla
   };
 }
 
+/** On an updated_at tie, the version further down the file wins: it is the last one exported. */
 function keepLatestVersions(reviews: ExportReview[]) {
   const latestById = new Map<string, ExportReview>();
   const duplicates = new Set<string>();

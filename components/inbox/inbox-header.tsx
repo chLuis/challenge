@@ -36,5 +36,5 @@ function headlineDetail(pending: number, lowRated: number): string {
   if (pending === 0) return "Las reseñas nuevas van a aparecer acá cuando se importe el próximo archivo.";
   if (lowRated === 0) return "Ninguna es de 1 o 2 estrellas.";
   if (lowRated === 1) return "Una es de 1 o 2 estrellas: conviene empezar por esa.";
-  return `${lowRated} son de 1 o 2 estrellas: priorizar empezar por esas.`;
+  return `${lowRated} son de 1 o 2 estrellas: conviene empezar por esas.`;
 }

@@ -65,6 +65,15 @@ describe("planImport", () => {
     }
   });
 
+  it("keeps the version further down the file when both have the same updated_at", () => {
+    const first = exportReview({ rating: 1 });
+    const last = exportReview({ rating: 2 });
+
+    const plan = planImport(parse([first, last]), []);
+
+    expect(plan.toCreate.map((row) => row.rating)).toEqual([2]);
+  });
+
   it("updates a stored review when the file brings a newer edit", () => {
     const stored = planImport(parse([exportReview()]), []).toCreate;
     const edited = parse([exportReview({ rating: 2, updated_at: "2026-09-05T10:00:00Z" })]);

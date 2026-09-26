@@ -1,7 +1,8 @@
 @import "tailwindcss";
 
-/* Color only carries meaning: good / regular / bad ratings, and "draft" for
-   text a model wrote that is not saved yet. Everything else stays neutral.
+/* Color only carries meaning: good / regular / bad ratings, "pending" for
+   what is left to answer, and "draft" for text a model wrote that is not
+   saved yet. Everything else stays neutral.
 
    Each token is written once as light-dark(light, dark). color-scheme picks
    the side: the system preference by default, or the one forced by
@@ -21,6 +22,8 @@
   --bad: light-dark(#dc2626, #f87171);
   --draft: light-dark(#4a55a2, #a9b1f0);
   --draft-soft: light-dark(#eef0fb, #23264a);
+  --pending: #92400e;
+  --pending-text: #ffffff;
 }
 
 :root[data-theme="light"] {
@@ -44,10 +47,13 @@
   --color-bad: var(--bad);
   --color-draft: var(--draft);
   --color-draft-soft: var(--draft-soft);
+  --color-pending: var(--pending);
+  --color-pending-text: var(--pending-text);
   --font-sans: var(--font-geist-sans);
 }
 
 body {
   background: var(--bg);
   color: var(--text);
+  scroll-behavior: smooth;
 }
